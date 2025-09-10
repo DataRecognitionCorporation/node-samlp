@@ -1,5 +1,5 @@
 var xmlCrypto = require('xml-crypto');
-var xmldom = require('xmldom');
+var xmldom = require('@auth0/xmldom');
 
 exports.verifySignature = function(assertion, cert) {
   try {
@@ -20,7 +20,7 @@ exports.verifySignature = function(assertion, cert) {
     if (!result) {
       console.log(sig.validationErrors);
     }
-    
+
     return result;
   } catch (e) {
     console.log(e);
@@ -86,6 +86,14 @@ exports.getDigestMethodAlgorithm = function(assertion) {
 exports.getIssueInstant = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
   return doc.documentElement.getAttribute('IssueInstant');
+};
+
+/**
+ * @param {String} assertion
+ * @return {number} the instant in milliseconds since the Epoch
+ */
+exports.getIssueInstantUTC = function(assertion) {
+  return new Date(exports.getIssueInstant(assertion)).getTime();
 };
 
 exports.getConditions = function(assertion) {

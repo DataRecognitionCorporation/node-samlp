@@ -22,6 +22,8 @@ All notable changes to this project will be documented in this file. See [standa
 * @auth0/xmldom updated to 0.1.23
 * ejs updated to ^3.1.10
 * mocha pinned to 11.3.0
+* replace istanbul with nyc@15 for coverage
+* update CI workflow to Node.js 22.x; upgrade actions/checkout and actions/setup-node to v4
 
 
 ### [7.1.1](https://github.com/auth0/node-samlp/compare/v7.1.0...v7.1.1) (2023-11-20)

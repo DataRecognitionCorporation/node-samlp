@@ -8,7 +8,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "./node_modules/.bin/_mocha -R spec --colors",
-    "cover": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec --colors",
+    "cover": "nyc ./node_modules/.bin/_mocha -R spec --colors",
     "open_cover": "open coverage/lcov-report/*.html",
     "release": "standard-version"
   },
@@ -41,7 +41,7 @@
     "cheerio-select": "~0.0.3",
     "express": "^4.17.1",
     "express-session": "^1.14.2",
-    "istanbul": "^0.4.5",
+    "nyc": "^15.1.0",
     "mocha": "11.3.0",
     "request": "~2.88.0",
     "standard-version": "^9.1.0",
@@ -53,5 +53,27 @@
     "underscore": "^1.13.8",
     "serialize-javascript": "^7.0.3",
     "nth-check": "^2.0.1"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "per-file": true,
+    "lines": 70,
+    "statements": 70,
+    "functions": 70,
+    "branches": 70,
+    "extension": [
+      ".js"
+    ],
+    "exclude": [
+      "test/**/*.js",
+      "coverage/**/*.js"
+    ],
+    "reporter": [
+      "html",
+      "lcov",
+      "text"
+    ],
+    "all": false,
+    "report-dir": "./coverage"
   }
 }

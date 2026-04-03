@@ -8,6 +8,7 @@ var zlib = require('zlib');
 var encoder = require('../lib/encoders');
 var fs = require('fs');
 var path = require('path');
+var getSamlResponse = require('../lib/samlp').getSamlResponse;
 
 describe('samlp', function () {
 
@@ -614,8 +615,8 @@ describe('samlp', function () {
               qs: {
                 RelayState: '123',
                 SAMLRequest: buffer.toString('base64'),
-                Signature: 'HaX739zOyRn4PR2pi1Bud05rHbPGfppz5x5crr2EuOzLbfNuvLeK//ZCNsC/R/8B4CWe2SYYCYJ6UhBRvhCx8G7H92TIw8TjbsTfAWemp6mJh+zBqaI2It8sFZMYntsbd0jfBo4CbuM8872cNQkdedV5V56gaErjBA8z3HoyTWpQi9nH2fjtmDDfoQmoVum5q+vgbm103qxjH0j/gR+OXi5Rne8ijMLhhXgt9EdLmN8OS6l1LRUPe3XDLz6ZKbo9T2k6GR1x+w6bN18JOdeCwDn+nx4fmPbGGrcz/DT/3mTL5MY7TeRDz8rGSCZ5+yDNtmgQ9Nv2O//joonmRBkF6Q==',
-                SigAlg: 'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
+                Signature: 'PLlGSv2Cvb1We41DFay2aE4HQFyS2OSarDg2MFNrtstDJTbJmpNBfBMztSF9a8BoOkFWzfg7vEkA+yfIXmcv/jZYlqqO98Dixb1Su40nHpPAHkjVZHk6UOew0fTnJg1Wmn3LhaIng8cGu/fKORpG3YTQAJPox46bGMUu/pVv8xPDCvmofTj+vKhftlkgwh5YZ7mhXjBbC5HN6X1/MAttxoCbicjv4JeqEDcq0HWdR72kw3uaj/COzarSEkJmIiPG0mqoHP1AoHFs1llkLIr7/5+EBz4VaA+xBYuwRCSej/ZlEYcEtkqGqiWqIaeSP9XTlmXO5M785w04jslTNHA1Ng==',
+                SigAlg: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
               }
             }, function (err, response, b){
                 if(err) return done(err);
@@ -687,7 +688,7 @@ describe('samlp', function () {
         it('should return an error', function (done) {
           doRawSAMLRequest(function (response) {
             expect(response.statusCode).to.equal(400);
-            expect(response.body).to.match(/error:\w+:PEM routines:\w+:no start line/);
+            expect(response.body).to.match(/error:[\w:]+:(PEM routines[\w:]*:no start line|DECODER routines[\w:]*:unsupported)/);
             done();
           });
         });
@@ -736,7 +737,7 @@ describe('samlp', function () {
         it('should return an error', function (done) {
           doRawSAMLRequest(function (response) {
             expect(response.statusCode).to.equal(400);
-            expect(response.body).to.match(/error:\w+:PEM routines:\w+:no start line/);
+            expect(response.body).to.match(/error:[\w:]+:(PEM routines[\w:]*:no start line|DECODER routines[\w:]*:unsupported)/);
             done();
           });
         });
@@ -859,6 +860,96 @@ describe('samlp', function () {
         var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
         var signature = doc.documentElement.getElementsByTagName('Signature');
         expect(signature[0].parentNode.nodeName).to.equal('saml:Assertion');
+      });
+    });
+  });
+
+  describe('when using encryption options', function () {
+    
+    describe('when using insecure algorithm', function () {
+      var body, $, response;                                                                                                        
+                                                                                                                      
+      before(function (done) {
+        server.options = {
+          encryptionPublicKey: fs.readFileSync(path.join(__dirname, 'fixture/sp1.pem')),
+          encryptionCert:      fs.readFileSync(path.join(__dirname, 'fixture/sp1.pem')),
+          encryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+          disallowEncryptionWithInsecureAlgorithm: true,
+          warnOnInsecureEncryptionAlgorithm: false
+        };
+        request.get({
+          jar: request.jar(),
+          uri: 'http://localhost:5050/samlp?SAMLRequest=' + urlEncodedSAMLRequest + '&RelayState=123'
+        }, function (err, res, b) {
+          if (err) return done(err);
+          body = b;
+          response = res;
+          $ = cheerio.load(body);
+          done();
+        });
+      });
+
+      it('should return an error with disallowEncryptionWithInsecureAlgorithm set to true', function () {
+        expect(response.statusCode).to.equal(400);
+        expect(body).to.equal('encryption algorithm http://www.w3.org/2001/04/xmlenc#aes256-cbc is not secure');
+      });
+    });
+
+    describe('when using insecure encryption algorithm with disallowEncryptionWithInsecureAlgorithm set to false', function () {
+      var body, $, response;                                                                                                        
+                                                                                                                      
+      before(function (done) {
+        server.options = {
+          encryptionPublicKey: fs.readFileSync(path.join(__dirname, 'fixture/sp1.pem')),
+          encryptionCert:      fs.readFileSync(path.join(__dirname, 'fixture/sp1.pem')),
+          encryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+          disallowEncryptionWithInsecureAlgorithm: false,
+          warnOnInsecureEncryptionAlgorithm: false
+        };
+        request.get({
+          jar: request.jar(),
+          uri: 'http://localhost:5050/samlp?SAMLRequest=' + urlEncodedSAMLRequest + '&RelayState=123'
+        }, function (err, res, b) {
+          if (err) return done(err);
+          body = b;
+          response = res;
+          $ = cheerio.load(body);
+          done();
+        });
+      });
+
+      it('should return success with disallowEncryptionWithInsecureAlgorithm set to false', function (done) {
+        expect(response.statusCode).to.equal(200);
+        done();
+      });
+    });
+
+    describe('when using secure encryption algorithm', function () {
+      var body, $, response;                                                                                                        
+                                                                                                                      
+      before(function (done) {
+        server.options = {
+          encryptionPublicKey: fs.readFileSync(path.join(__dirname, 'fixture/sp1.pem')),
+          encryptionCert:      fs.readFileSync(path.join(__dirname, 'fixture/sp1.pem')),
+          encryptionAlgorithm: 'http://www.w3.org/2009/xmlenc11#aes256-gcm',
+          disallowEncryptionWithInsecureAlgorithm: true,
+          warnOnInsecureEncryptionAlgorithm: false
+        };
+        request.get({
+          jar: request.jar(),
+          uri: 'http://localhost:5050/samlp?SAMLRequest=' + urlEncodedSAMLRequest + '&RelayState=123'
+        }, function (err, res, b) {
+          if (err) return done(err);
+          body = b;
+          response = res;
+          $ = cheerio.load(body);
+          done();
+        });
+      });
+
+      it('should return success when using a secure algorithm', function (done) {
+        expect(response.statusCode).to.equal(200);
+        done();
       });
     });
   });

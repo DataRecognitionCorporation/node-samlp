@@ -1,6 +1,14 @@
-# Changelog
+# [8.0.0](https://github.com/auth0/node-samlp/compare/v7.1.1...v8.0.0) (2026-03-31)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### Features
+
+* add encryption algorithm options ([#157](https://github.com/auth0/node-samlp/issues/157)) ([1444aad](https://github.com/auth0/node-samlp/commit/1444aad42039578d0a659576141318c91e8e5afe))
+
+
+### BREAKING CHANGES
+
+* adding encryption algorithm in options(if not set, defaults to http://www.w3.org/2009/xmlenc11#aes256-gcm), adding disallowEncryptionWithInsecureAlgorithm to enforce secure encryption algorithms
 
 ## [7.2.0](https://github.com/DataRecognitionCorporation/node-samlp/compare/v7.1.1...v7.2.0) (2026-04-02)
 
@@ -24,7 +32,6 @@ All notable changes to this project will be documented in this file. See [standa
 * mocha pinned to 11.3.0
 * replace istanbul with nyc@15 for coverage
 * update CI workflow to Node.js 22.x; upgrade actions/checkout and actions/setup-node to v4
-
 
 ### [7.1.1](https://github.com/auth0/node-samlp/compare/v7.1.0...v7.1.1) (2023-11-20)
 

@@ -1,11 +1,15 @@
 {
   "name": "samlp",
-  "version": "7.2.0",
+  "version": "8.0.0",
   "engines": {
     "node": ">=22"
   },
   "description": "SAML Protocol server middleware",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "templates"
+  ],
   "scripts": {
     "test": "./node_modules/.bin/_mocha -R spec --colors",
     "cover": "nyc ./node_modules/.bin/_mocha -R spec --colors",
@@ -24,13 +28,13 @@
   "license": "mit",
   "dependencies": {
     "@auth0/thumbprint": "0.0.6",
+    "@auth0/xmldom": "0.1.23",
     "auth0-id-generator": "^0.2.0",
     "ejs": "^3.1.10",
     "flowstate": "^0.4.0",
     "querystring": "^0.2.0",
     "saml": "^4.0.0",
     "xml-crypto": "^2.0.0",
-    "@auth0/xmldom": "0.1.23",
     "xpath": "0.0.5",
     "xtend": "^1.0.3"
   },

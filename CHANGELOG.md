@@ -1,3 +1,9 @@
+# [8.0.1](https://github.com/DataRecognitionCorporation/node-samlp/compare/v8.0.0...v8.0.1) (2026-04-08)
+
+### Bug Fixes
+
+* normalize private key to PKCS#8 before signing to prevent OpenSSL 3.x DECODER errors with legacy PKCS#1 keys
+
 # [8.0.0](https://github.com/auth0/node-samlp/compare/v7.1.1...v8.0.0) (2026-03-31)
 
 

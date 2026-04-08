@@ -1,3 +1,10 @@
+# [8.0.2](https://github.com/DataRecognitionCorporation/node-samlp/compare/v8.0.1...v8.0.2) (2026-04-08)
+
+### Bug Fixes
+
+* also handle private keys stored with literal `\n` characters (common in Puppet/Hiera env vars) in normalizePrivateKey
+* detect empty signing key early and surface a clear error instead of the cryptic `error:1E08010C:DECODER routines::unsupported`
+
 # [8.0.1](https://github.com/DataRecognitionCorporation/node-samlp/compare/v8.0.0...v8.0.1) (2026-04-08)
 
 ### Bug Fixes
